@@ -16,6 +16,7 @@ builder.WebHost.ConfigureKestrel((context, options) =>
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 
+builder.Services.AddScoped<EchoService>();
 builder.Services.AddSingleton<LogMessageBehavior>();
 builder.Services.AddSingleton<LogMessageInspector>();
 
