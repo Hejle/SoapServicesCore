@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="C:\Users\joach\.nuget\packages\corewcf.configurationmanager\1.0.2\contentFiles\any\netstandard2.0\CoreWCF.machine.config" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="CoreWCF.ConfigurationManager" Version="1.0.2" />
     <PackageReference Include="CoreWCF.Http" Version="1.0.2" />
 	<PackageReference Include="CoreWCF.Primitives" Version="1.0.2" />

@@ -1,8 +1,4 @@
-﻿using System.Buffers;
-using System.Collections;
-using System.Diagnostics;
-using System.Runtime.CompilerServices;
-using System.Text;
+﻿using System.Collections;
 
 namespace SoapServicesCore.Logging;
 

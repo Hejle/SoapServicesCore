@@ -8,6 +8,10 @@ namespace SoapServicesCore
 
         public string Echo(string text)
         {
+            if(int.TryParse(text, out var result))
+            {
+                return (result+1).ToString();
+            }
             return text;
         }
 

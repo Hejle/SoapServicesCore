@@ -36,11 +36,11 @@ public class LogHeadersMiddleware
 
         _logger.LogInformation(requestHeaders.ToString());
 
-        _logger.LogInformation(requestBody.FormatXml());
+        //_logger.LogInformation(requestBody.FormatXml());
 
         _logger.LogInformation(responseHeaders.ToString());
 
-        _logger.LogInformation(responseBody.FormatXml());
+        //_logger.LogInformation(responseBody.FormatXml());
     }
 
     private static async Task<string> ReadResponseBodyAndAssignResponseToResponseStream(Stream originalBody, MemoryStream newBody)

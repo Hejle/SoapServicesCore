@@ -1,9 +1,10 @@
 ﻿using CoreWCF;
+using CoreWCF.Channels;
 using CoreWCF.Configuration;
 using CoreWCF.Description;
 using SoapServicesCore;
+using SoapServicesCore.Behavior;
 using SoapServicesCore.Logging;
-using SoapServicesCore.Middleware;
 using SoapServicesCore.ServiceContracts;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,21 +16,16 @@ builder.WebHost.ConfigureKestrel((context, options) =>
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 
-builder.Services.AddTransient<MiddlewareMapper>();
-builder.Services.AddTransient<ValidateUser>();
+builder.Services.AddSingleton<LogMessageBehavior>();
+builder.Services.AddSingleton<LogMessageInspector>();
+
 // Add WSDL support
 builder.Services.AddServiceModelServices().AddServiceModelMetadata();
 builder.Services.AddSingleton<IServiceBehavior, UseRequestHeadersForMetadataAddressBehavior>();
-//builder.Services.AddServiceModelConfigurationManagerFile("wcf.config");
-
-
 
 var app = builder.Build();
 
-app.UseMiddleware<ValidateUser>();
-app.UseMiddleware<MiddlewareMapper>();
 app.UseMiddleware<LogHeadersMiddleware>();
-
 
 app.UseServiceModel(builder =>
 {
@@ -39,11 +35,24 @@ app.UseServiceModel(builder =>
         serviceOptions.DebugBehavior.IncludeExceptionDetailInFaults = true;
         serviceOptions.BaseAddresses.Add(new Uri("http://localhost/EchoService.svc"));
     })
-    // Add a BasicHttpBinding at a specific endpoint
-    .AddServiceEndpoint<EchoService, IEchoService>(new BasicHttpBinding(), "/EchoService");
+    .AddServiceEndpoint<EchoService, IEchoService>(new BasicHttpBinding(), "/EchoService", endpointOptions =>
+    {
+        endpointOptions.EndpointBehaviors.Add(app.Services.GetRequiredService<LogMessageBehavior>());
+    })
+    .AddService<EchoService>(serviceOptions =>
+    {
+        serviceOptions.DebugBehavior.IncludeExceptionDetailInFaults = true;
+        serviceOptions.BaseAddresses.Add(new Uri("https://localhost/EchoService.svc"));
+    })
+    // Add a BasicHttpBinding at a specific endpoint with Behavior
+    .AddServiceEndpoint<EchoService, IEchoService>(new BasicHttpBinding(BasicHttpSecurityMode.Transport), "/EchoService", endpointOptions =>
+    {
+        endpointOptions.EndpointBehaviors.Add(app.Services.GetRequiredService<LogMessageBehavior>());
+    });
 });
 
 var serviceMetadataBehavior = app.Services.GetRequiredService<ServiceMetadataBehavior>();
 serviceMetadataBehavior.HttpGetEnabled = true;
+serviceMetadataBehavior.HttpsGetEnabled = true;
 
 app.Run();

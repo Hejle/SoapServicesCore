@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
-using CoreWCF;
 
 namespace SoapServicesCore.ServiceContracts;
 
