@@ -1,4 +1,6 @@
-﻿namespace SoapServicesCore
+﻿using System;
+
+namespace SoapServicesCore
 {
     public class HeaderObject
     {

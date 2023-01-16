@@ -1,6 +1,7 @@
 ﻿using CoreWCF;
 using CoreWCF.Channels;
 using CoreWCF.Dispatcher;
+using Microsoft.Extensions.Logging;
 
 namespace SoapServicesCore.Behavior
 {

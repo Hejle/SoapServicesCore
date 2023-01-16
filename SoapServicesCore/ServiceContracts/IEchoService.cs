@@ -1,4 +1,5 @@
 ﻿using CoreWCF;
+using Microsoft.AspNetCore.Authorization;
 
 namespace SoapServicesCore.ServiceContracts;
 

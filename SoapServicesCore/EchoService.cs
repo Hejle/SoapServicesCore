@@ -1,6 +1,10 @@
 ﻿using CoreWCF;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Logging;
 using SoapServicesCore.ServiceContracts;
+using System;
 using System.Security.Principal;
+using System.Threading;
 
 namespace SoapServicesCore
 {
@@ -15,7 +19,6 @@ namespace SoapServicesCore
 
         public string Echo(string text)
         {
-            ValidateUser();
             if (int.TryParse(text, out var result))
             {
                 return (result+1).ToString();
@@ -23,6 +26,7 @@ namespace SoapServicesCore
             return text;
         }
 
+        [Authorize]
         public string ComplexEcho(EchoMessage text)
         {
             if(text is null)
@@ -38,16 +42,6 @@ namespace SoapServicesCore
         public PingOutput Ping()
         {
             return new PingOutput() { Result = true };
-        }
-
-        private void ValidateUser()
-        {
-            IPrincipal clientUser = Thread.CurrentPrincipal;
-            if(clientUser == null)
-            {
-                _logger.LogInformation("User was null");
-                throw new FaultException<EchoFault>(new EchoFault() { Text = "Not logged In" }, new FaultReason("SecurityException"));
-            }
         }
     }
 }
