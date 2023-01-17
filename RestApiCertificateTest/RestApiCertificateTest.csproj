@@ -4,7 +4,12 @@
     <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>a78a3b82-8e30-420e-86d7-4601a12c0e07</UserSecretsId>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="cert.md" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\SoapServicesCore\SoapServicesCore.csproj" />

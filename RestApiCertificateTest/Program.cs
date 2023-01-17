@@ -1,29 +1,36 @@
 using Microsoft.AspNetCore.Authentication.Certificate;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.AspNetCore.Server.Kestrel.Https;
+using RestApiCertificateTest.Middleware;
 using SoapServicesCore.Authentication;
 using SoapServicesCore.Interfaces;
 using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.Configure<KestrelServerOptions>(options =>
+builder.Logging.AddConsole();
+builder.Services.Configure<KestrelServerOptions>(kestrelServerOptions =>
 {
-    options.ConfigureHttpsDefaults(options =>
-        options.ClientCertificateMode = ClientCertificateMode.RequireCertificate);
+    kestrelServerOptions.ConfigureEndpointDefaults(options =>
+    {
+        options.UseConnectionLogging();
+    });
+    kestrelServerOptions.ConfigureHttpsDefaults(httpsConnectionAdapterOptions =>
+    {
+        httpsConnectionAdapterOptions.ClientCertificateMode = ClientCertificateMode.RequireCertificate;
+        httpsConnectionAdapterOptions.AllowAnyClientCertificate();
+    });
 });
 builder.Services.AddScoped<ICertificateValidationService, X509CertificateValidationService>();
-
-builder.Logging.AddConsole();
 
 builder.Services.AddAuthentication(CertificateAuthenticationDefaults.AuthenticationScheme)
     .AddCertificate();
 
 var app = builder.Build();
-
-app.UseHttpsRedirection();
-app.UseMiddleware<MyAuthenticationMiddleware>();
+app.UseMiddleware<HelloMiddleware>();
+app.UseAuthentication();
+//app.UseHttpsRedirection();
+//app.UseMiddleware<MyAuthenticationMiddleware>();
 //app.UseAuthentication();
-
 
 app.MapGet("/", () => "Hello World!");
 
@@ -34,7 +41,6 @@ static Action<CertificateAuthenticationOptions> ValidateCertificateHandlerMethod
     return options =>
     {
         options.AllowedCertificateTypes = CertificateTypes.All;
-        options.ValidateValidityPeriod = true;
         options.Events = new CertificateAuthenticationEvents
         {
             OnCertificateValidated = context =>
