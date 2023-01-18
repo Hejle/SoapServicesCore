@@ -21,16 +21,15 @@ using System.Threading.Tasks;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.Configure<KestrelServerOptions>(kestrelServerOptions =>
-{
-    kestrelServerOptions.AllowSynchronousIO = true;
-    kestrelServerOptions.ConfigureHttpsDefaults(httpsConnectionAdapterOptions =>
-    {
-        //// To be able to see the swagger links, set this to ClientCertificateMode.DelayCertificate
-        httpsConnectionAdapterOptions.ClientCertificateMode = ClientCertificateMode.DelayCertificate;
-        httpsConnectionAdapterOptions.AllowAnyClientCertificate();
-    });
-});
+//builder.Services.Configure<KestrelServerOptions>(kestrelServerOptions =>
+//{
+//    kestrelServerOptions.AllowSynchronousIO = true;
+//    kestrelServerOptions.ConfigureHttpsDefaults(httpsConnectionAdapterOptions =>
+//    {
+//        //// To be able to see the swagger links, set this to ClientCertificateMode.DelayCertificate
+//        httpsConnectionAdapterOptions.ClientCertificateMode = ClientCertificateMode.RequireCertificate;
+//    };
+//    };
 
 builder.Services.AddScoped<ICertificateValidationService, X509CertificateValidationService>();
 
@@ -39,7 +38,7 @@ builder.Logging.AddConsole();
 
 builder.Services.AddAuthentication(CertificateAuthenticationDefaults.AuthenticationScheme)
 //builder.Services.AddAuthentication(CertificateAuthenticationDefaults.AuthenticationScheme)
-    .AddCertificate(ValidateCertificateHandlerMethod());
+    .AddCertificate();
 
 builder.Services.AddAuthorization(options =>
 {
@@ -99,6 +98,7 @@ static Action<CertificateAuthenticationOptions> ValidateCertificateHandlerMethod
             OnChallenge = context =>
             {
                 Console.WriteLine("On Challenge failed");
+                Console.WriteLine(context);
                 return Task.CompletedTask;
             },
             OnAuthenticationFailed = context =>
@@ -109,6 +109,7 @@ static Action<CertificateAuthenticationOptions> ValidateCertificateHandlerMethod
             },
             OnCertificateValidated = context =>
             {
+                Console.WriteLine("Auth Success");
                 var validationService = context.HttpContext.RequestServices.GetRequiredService<ICertificateValidationService>();
 
                 if(!validationService.ValidateCertificate(context.ClientCertificate))

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace SoapServicesCore.ServiceContracts;
 
-[ServiceContract(Name = "IEchoService", Namespace = "http://rep.oio.dk/inm.dk/2008/08/18/")]
+[ServiceContract(Name = "IEchoService")]
 public interface IEchoService
 {
     [OperationContract]

@@ -12,3 +12,12 @@ docker run --rm -it
 	-e ASPNETCORE_ENVIRONMENT=Development 
 	-v $env:APPDATA\microsoft\UserSecrets\:C:\Users\ContainerUser\AppData\Roaming\microsoft\UserSecrets 
 	-v $env:USERPROFILE\.aspnet\https:C:\Users\ContainerUser\AppData\Roaming\ASP.NET\Https mcr.microsoft.com/dotnet/samples:aspnetapp
+
+
+
+	$cert = New-SelfSignedCertificate -certstorelocation cert:\CurrentUser\my -dnsname localhost
+	$pwd = ConvertTo-SecureString -String 'netcompany-1234' -Force -AsPlainText
+	$path = 'cert:\currentuser\my\' + $cert.thumbprint
+	Export-PfxCertificate -cert $path -FilePath seflsignedlocalhost.pfx -Password $pwd
+
+	Tilgå seflsignedlocalhost.pfx certifikatet i den folder som er contexten for Powershell og installere certifikatet.
